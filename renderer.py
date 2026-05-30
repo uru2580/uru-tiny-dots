@@ -58,7 +58,7 @@ def draw_title(game) -> None:
 
     selected = game.game_choices[game.selected_game_index]
     hi = game.high_scores.get(selected["id"], 0)
-    pyxel.text(47, 118, f"HI {hi:05}  ENTER START", 6)
+    pyxel.text(35, 118, f"HI {hi:05}  DPAD SELECT  A START", 6)
 
 
 def draw_pause(game) -> None:
@@ -77,7 +77,7 @@ def draw_pause(game) -> None:
         pyxel.rectb(x, y, w, h, edge)
         pyxel.text(x + 4, y + 4, choice[:6], text_color)
 
-    pyxel.text(48, 91, "P RESUME  ENTER SELECT", 6)
+    pyxel.text(42, 91, "START RESUME  A SELECT", 6)
 
 
 def draw_background(game) -> None:
@@ -243,4 +243,4 @@ def draw_game_over(game) -> None:
         pyxel.rectb(x + shake, y, w, h, edge)
         pyxel.text(x + shake + 10, y + 4, choice, text_color)
 
-    pyxel.text(42 + shake, 91, "LEFT/RIGHT SELECT  ENTER", 6)
+    pyxel.text(42 + shake, 91, "DPAD SELECT  A DECIDE", 6)

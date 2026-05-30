@@ -10,11 +10,18 @@ def hit(ax, ay, aw, ah, bx, by, bw, bh) -> bool:
 
 
 def pressed_action() -> bool:
-    return pyxel.btnp(pyxel.KEY_SPACE) or pyxel.btnp(pyxel.KEY_Z) or pyxel.btnp(pyxel.GAMEPAD1_BUTTON_A)
+    return (
+        pyxel.btnp(pyxel.KEY_SPACE)
+        or pyxel.btnp(pyxel.KEY_Z)
+        or pyxel.btnp(pyxel.GAMEPAD1_BUTTON_A)
+        or pyxel.btnp(pyxel.GAMEPAD1_BUTTON_B)
+        or pyxel.btnp(pyxel.GAMEPAD1_BUTTON_X)
+        or pyxel.btnp(pyxel.GAMEPAD1_BUTTON_Y)
+    )
 
 
 def pressed_confirm() -> bool:
-    return pressed_action() or pyxel.btnp(pyxel.KEY_RETURN)
+    return pressed_action() or pyxel.btnp(pyxel.KEY_RETURN) or pyxel.btnp(pyxel.GAMEPAD1_BUTTON_START)
 
 
 class MiniGame:
@@ -176,12 +183,12 @@ class SkyTower(MiniGame):
         self.items = []
 
     def update(self) -> None:
-        if pyxel.btn(pyxel.KEY_LEFT) or pyxel.btn(pyxel.KEY_A):
+        if self.host.left_down():
             self.x -= 2
-        if pyxel.btn(pyxel.KEY_RIGHT) or pyxel.btn(pyxel.KEY_D):
+        if self.host.right_down():
             self.x += 2
         self.x %= WIDTH
-        if pressed_action() and self.jetpack > 0:
+        if self.host.action_pressed() and self.jetpack > 0:
             self.vy = -5.5
             self.jetpack -= 1
         self.vy += 0.28
@@ -222,7 +229,7 @@ class SkyTower(MiniGame):
 
     def draw(self) -> None:
         pyxel.cls(1)
-        self.hud("ARROWS MOVE SPACE JET")
+        self.hud("DPAD MOVE  A JET")
         pyxel.rect(self.x, self.y - self.camera, 8, 10, 10 if self.inv else 7)
         for x, y, w, kind, _gone in self.platforms:
             color = {"normal": 11, "move": 12, "fade": 6}[kind]

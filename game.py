@@ -132,7 +132,7 @@ class RunnerGame:
             self.update_pause()
             return
 
-        if pyxel.btnp(pyxel.KEY_P):
+        if self.pause_pressed():
             self.paused = True
             self.selected_pause_index = 0
             return
@@ -166,18 +166,59 @@ class RunnerGame:
             self.combo = 0
 
     def jump_pressed(self) -> bool:
-        keyboard = pyxel.btnp(pyxel.KEY_SPACE) or pyxel.btnp(pyxel.KEY_Z) or pyxel.btnp(pyxel.GAMEPAD1_BUTTON_A)
-        if keyboard:
+        if self.action_pressed():
             return True
 
-        x, y, w, h = self.jump_button_rect
-        mouse_hit = x <= pyxel.mouse_x <= x + w and y <= pyxel.mouse_y <= y + h
-        return mouse_hit and pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT)
+        return False
+
+    def left_down(self) -> bool:
+        return pyxel.btn(pyxel.KEY_LEFT) or pyxel.btn(pyxel.KEY_A) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_LEFT)
+
+    def right_down(self) -> bool:
+        return pyxel.btn(pyxel.KEY_RIGHT) or pyxel.btn(pyxel.KEY_D) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_RIGHT)
+
+    def up_pressed(self) -> bool:
+        return pyxel.btnp(pyxel.KEY_UP) or pyxel.btnp(pyxel.KEY_W) or pyxel.btnp(pyxel.GAMEPAD1_BUTTON_DPAD_UP)
+
+    def down_pressed(self) -> bool:
+        return pyxel.btnp(pyxel.KEY_DOWN) or pyxel.btnp(pyxel.KEY_S) or pyxel.btnp(pyxel.GAMEPAD1_BUTTON_DPAD_DOWN)
+
+    def left_pressed(self) -> bool:
+        return pyxel.btnp(pyxel.KEY_LEFT) or pyxel.btnp(pyxel.KEY_A) or pyxel.btnp(pyxel.GAMEPAD1_BUTTON_DPAD_LEFT)
+
+    def right_pressed(self) -> bool:
+        return pyxel.btnp(pyxel.KEY_RIGHT) or pyxel.btnp(pyxel.KEY_D) or pyxel.btnp(pyxel.GAMEPAD1_BUTTON_DPAD_RIGHT)
+
+    def action_down(self) -> bool:
+        return (
+            pyxel.btn(pyxel.KEY_SPACE)
+            or pyxel.btn(pyxel.KEY_Z)
+            or pyxel.btn(pyxel.GAMEPAD1_BUTTON_A)
+            or pyxel.btn(pyxel.GAMEPAD1_BUTTON_B)
+            or pyxel.btn(pyxel.GAMEPAD1_BUTTON_X)
+            or pyxel.btn(pyxel.GAMEPAD1_BUTTON_Y)
+        )
+
+    def action_pressed(self) -> bool:
+        return (
+            pyxel.btnp(pyxel.KEY_SPACE)
+            or pyxel.btnp(pyxel.KEY_Z)
+            or pyxel.btnp(pyxel.GAMEPAD1_BUTTON_A)
+            or pyxel.btnp(pyxel.GAMEPAD1_BUTTON_B)
+            or pyxel.btnp(pyxel.GAMEPAD1_BUTTON_X)
+            or pyxel.btnp(pyxel.GAMEPAD1_BUTTON_Y)
+        )
+
+    def confirm_pressed(self) -> bool:
+        return pyxel.btnp(pyxel.KEY_RETURN) or pyxel.btnp(pyxel.GAMEPAD1_BUTTON_START) or self.action_pressed()
+
+    def pause_pressed(self) -> bool:
+        return pyxel.btnp(pyxel.KEY_P) or pyxel.btnp(pyxel.GAMEPAD1_BUTTON_START) or pyxel.btnp(pyxel.GAMEPAD1_BUTTON_BACK)
 
     def update_title(self) -> None:
-        if pyxel.btnp(pyxel.KEY_UP) or pyxel.btnp(pyxel.KEY_W):
+        if self.up_pressed() or self.left_pressed():
             self.move_title_selection(-1)
-        if pyxel.btnp(pyxel.KEY_DOWN) or pyxel.btnp(pyxel.KEY_S):
+        if self.down_pressed() or self.right_pressed():
             self.move_title_selection(1)
 
         for index, _choice in enumerate(self.game_choices):
@@ -189,12 +230,7 @@ class RunnerGame:
                         self.start_selected_game()
                 break
 
-        if (
-            pyxel.btnp(pyxel.KEY_RETURN)
-            or pyxel.btnp(pyxel.KEY_SPACE)
-            or pyxel.btnp(pyxel.KEY_Z)
-            or pyxel.btnp(pyxel.GAMEPAD1_BUTTON_A)
-        ):
+        if self.confirm_pressed():
             self.start_selected_game()
 
     def move_title_selection(self, direction: int) -> None:
@@ -232,17 +268,13 @@ class RunnerGame:
         self.game_over_timer += 1
 
         if (
-            pyxel.btnp(pyxel.KEY_LEFT)
-            or pyxel.btnp(pyxel.KEY_A)
-            or pyxel.btnp(pyxel.KEY_UP)
-            or pyxel.btnp(pyxel.KEY_W)
+            self.left_pressed()
+            or self.up_pressed()
         ):
             self.move_game_over_selection(-1)
         if (
-            pyxel.btnp(pyxel.KEY_RIGHT)
-            or pyxel.btnp(pyxel.KEY_D)
-            or pyxel.btnp(pyxel.KEY_DOWN)
-            or pyxel.btnp(pyxel.KEY_S)
+            self.right_pressed()
+            or self.down_pressed()
         ):
             self.move_game_over_selection(1)
 
@@ -260,34 +292,25 @@ class RunnerGame:
         elif pyxel.btnp(pyxel.KEY_T):
             self.selected_game_over_index = 1
             self.select_game_over_choice()
-        elif (
-            pyxel.btnp(pyxel.KEY_RETURN)
-            or pyxel.btnp(pyxel.KEY_SPACE)
-            or pyxel.btnp(pyxel.KEY_Z)
-            or pyxel.btnp(pyxel.GAMEPAD1_BUTTON_A)
-        ):
+        elif self.confirm_pressed():
             self.select_game_over_choice()
 
     def move_game_over_selection(self, direction: int) -> None:
         self.selected_game_over_index = (self.selected_game_over_index + direction) % len(self.game_over_choices)
 
     def update_pause(self) -> None:
-        if pyxel.btnp(pyxel.KEY_P):
+        if self.pause_pressed():
             self.paused = False
             return
 
         if (
-            pyxel.btnp(pyxel.KEY_LEFT)
-            or pyxel.btnp(pyxel.KEY_A)
-            or pyxel.btnp(pyxel.KEY_UP)
-            or pyxel.btnp(pyxel.KEY_W)
+            self.left_pressed()
+            or self.up_pressed()
         ):
             self.move_pause_selection(-1)
         if (
-            pyxel.btnp(pyxel.KEY_RIGHT)
-            or pyxel.btnp(pyxel.KEY_D)
-            or pyxel.btnp(pyxel.KEY_DOWN)
-            or pyxel.btnp(pyxel.KEY_S)
+            self.right_pressed()
+            or self.down_pressed()
         ):
             self.move_pause_selection(1)
 
@@ -299,12 +322,7 @@ class RunnerGame:
                     self.select_pause_choice()
                 break
 
-        if (
-            pyxel.btnp(pyxel.KEY_RETURN)
-            or pyxel.btnp(pyxel.KEY_SPACE)
-            or pyxel.btnp(pyxel.KEY_Z)
-            or pyxel.btnp(pyxel.GAMEPAD1_BUTTON_A)
-        ):
+        if self.confirm_pressed():
             self.select_pause_choice()
 
     def move_pause_selection(self, direction: int) -> None:
