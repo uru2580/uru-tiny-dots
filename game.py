@@ -17,15 +17,15 @@ class RunnerGame:
         self.high_scores = self.load_high_scores()
         self.game_choices = [
             {"id": "tiny_runner", "name": "Tiny Runner", "enabled": True},
-            {"id": "tiny_defender", "name": "Tiny Defender", "enabled": False},
+            {"id": "tiny_defender", "name": "Tiny Defender", "enabled": True},
             {"id": "sky_tower", "name": "Sky Tower", "enabled": True},
-            {"id": "pixel_dungeon", "name": "Pixel Dungeon", "enabled": False},
-            {"id": "box_master", "name": "Box Master", "enabled": False},
-            {"id": "color_burst", "name": "Color Burst", "enabled": False},
-            {"id": "laser_logic", "name": "Laser Logic", "enabled": False},
-            {"id": "switch_maze", "name": "Switch Maze", "enabled": False},
-            {"id": "bomb_technician", "name": "Bomb Technician", "enabled": False},
-            {"id": "tiny_fishing", "name": "Tiny Fishing", "enabled": False},
+            {"id": "pixel_dungeon", "name": "Pixel Dungeon", "enabled": True},
+            {"id": "box_master", "name": "Box Master", "enabled": True},
+            {"id": "color_burst", "name": "Color Burst", "enabled": True},
+            {"id": "laser_logic", "name": "Laser Logic", "enabled": True},
+            {"id": "switch_maze", "name": "Switch Maze", "enabled": True},
+            {"id": "bomb_technician", "name": "Bomb Technician", "enabled": True},
+            {"id": "tiny_fishing", "name": "Tiny Fishing", "enabled": True},
         ]
         self.game_over_choices = ["RETRY", "TITLE"]
         self.pause_choices = ["RESUME", "RETRY", "TITLE"]
