@@ -47,8 +47,6 @@ python main.py
 
 # PyxelゲームをWeb公開する手順
 
-## 正しいやり方（現在のPyxel環境）
-
 ### ① `.pyxapp` を作成
 
 ``` bash
@@ -84,7 +82,7 @@ pyxel app2html uru-tiny-dots.pyxapp
 
 ------------------------------------------------------------------------
 
-## 🚀 公開方法（GitHub Pages）
+## 公開方法（GitHub Pages）
 
 ### パターンA：htmlフォルダがある場合
 

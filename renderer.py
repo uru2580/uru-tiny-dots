@@ -7,14 +7,77 @@ from constants import GROUND_Y, HEIGHT, WIDTH
 
 
 def draw(game) -> None:
+    if game.screen == "title":
+        draw_title(game)
+        return
+
+    if game.active_game is not None:
+        game.active_game.draw()
+        if game.paused:
+            draw_pause(game)
+            return
+        if game.game_over:
+            draw_game_over(game)
+        return
+
     draw_background(game)
     draw_ground(game)
     draw_items(game)
     draw_hazards(game)
     draw_player(game)
     draw_hud(game)
+    if game.paused:
+        draw_pause(game)
+        return
     if game.game_over:
         draw_game_over(game)
+
+
+def draw_title(game) -> None:
+    draw_background(game)
+    pyxel.rect(0, 92, WIDTH, HEIGHT - 92, 0)
+    pyxel.text(57, 17, "URU TINY DOTS", 10)
+    pyxel.text(52, 30, "SELECT A GAME", 7)
+
+    for index, choice in enumerate(game.game_choices):
+        x, y, w, h = game.title_choice_rect(index)
+        enabled = choice["enabled"]
+        selected = index == game.selected_game_index
+        fill = 5 if selected and enabled else 1
+        edge = 10 if selected and enabled else 6 if enabled else 13
+        text_color = 7 if enabled else 13
+        label = choice["name"]
+
+        pyxel.rect(x, y, w, h, fill)
+        pyxel.rectb(x, y, w, h, edge)
+        if selected and enabled:
+            pyxel.tri(x - 8, y + 3, x - 8, y + 9, x - 3, y + 6, 10)
+        pyxel.text(x + 4, y + 4, label[:11], text_color)
+        if not enabled:
+            pyxel.text(x + w - 24, y + 4, "LOCK", 13)
+
+    selected = game.game_choices[game.selected_game_index]
+    hi = game.high_scores.get(selected["id"], 0)
+    pyxel.text(47, 118, f"HI {hi:05}  ENTER START", 6)
+
+
+def draw_pause(game) -> None:
+    pyxel.rect(28, 38, 136, 58, 0)
+    pyxel.rectb(28, 38, 136, 58, 10)
+    pyxel.text(81, 48, "PAUSE", 10)
+    pyxel.text(54, 60, f"SCORE {game.score:05}", 7)
+
+    for index, choice in enumerate(game.pause_choices):
+        x, y, w, h = game.pause_choice_rect(index)
+        selected = index == game.selected_pause_index
+        fill = 5 if selected else 1
+        edge = 10 if selected else 6
+        text_color = 7 if selected else 6
+        pyxel.rect(x, y, w, h, fill)
+        pyxel.rectb(x, y, w, h, edge)
+        pyxel.text(x + 4, y + 4, choice[:6], text_color)
+
+    pyxel.text(48, 91, "P RESUME  ENTER SELECT", 6)
 
 
 def draw_background(game) -> None:
@@ -164,9 +227,20 @@ def draw_jump_button(game) -> None:
 
 def draw_game_over(game) -> None:
     shake = 1 if game.game_over_timer < 24 and game.game_over_timer % 4 < 2 else 0
-    pyxel.rect(30 + shake, 37, 132, 48, 0)
-    pyxel.rectb(30 + shake, 37, 132, 48, 8)
+    pyxel.rect(30 + shake, 34, 132, 62, 0)
+    pyxel.rectb(30 + shake, 34, 132, 62, 8)
     pyxel.text(70 + shake, 45, "GAME OVER", 8)
     pyxel.text(55 + shake, 58, f"SCORE {game.score:05}", 7)
     pyxel.text(55 + shake, 68, f"HIGH  {game.high_score:05}", 10)
-    pyxel.text(45 + shake, 78, "SPACE / R TO RETRY", 6)
+
+    for index, choice in enumerate(game.game_over_choices):
+        x, y, w, h = game.game_over_choice_rect(index)
+        selected = index == game.selected_game_over_index
+        fill = 5 if selected else 1
+        edge = 10 if selected else 6
+        text_color = 7 if selected else 6
+        pyxel.rect(x + shake, y, w, h, fill)
+        pyxel.rectb(x + shake, y, w, h, edge)
+        pyxel.text(x + shake + 10, y + 4, choice, text_color)
+
+    pyxel.text(42 + shake, 91, "LEFT/RIGHT SELECT  ENTER", 6)
